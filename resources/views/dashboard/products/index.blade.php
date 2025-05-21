@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Products')">
-    <div class="relative mb-6 w-full">
+    <div class="relative mb-6 w-full " style="justify-items: center;">
         <flux:heading size="xl">Products</flux:heading>
         <flux:subheading size="lg" class="mb-6">Manage Product Data</flux:subheading>
         <flux:separator variant="subtle" />

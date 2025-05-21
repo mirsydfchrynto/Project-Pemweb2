@@ -21,7 +21,7 @@ class ProductController extends Controller
         $products = Product::with('category')
                         ->where('name', 'like', '%' . $q . '%')
                         ->orWhere('description', 'like', '%' . $q . '%')
-                        ->paginate(10);
+                        ->paginate(8);
 
         return view('dashboard.products.index', compact('products', 'q'));
         
