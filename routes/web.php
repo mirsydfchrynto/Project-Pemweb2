@@ -9,21 +9,6 @@ use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerAuthController;
 
-Route::group(['prefix' => 'customer'], function () {
-    Route::controller(CustomerAuthController::class)->group(function () {
-        //tampilkan halaman login 
-        Route::get('login', 'login')->name('customer.login');
-        //aksi login 
-        Route::post('login', 'store_login')->name('customer.store_login');
-        //tampilkan halaman register 
-        Route::get('register', 'register')->name('customer.register');
-        //aksi register 
-        Route::post('register', 'store_register')->name('customer.store_register');
-        //aksi logout 
-        Route::post('logout', 'logout')->name('customer.logout');
-    });
-});
-
 
 //kode baru diubah menjadi seperti ini
 Route::get('/', [controller1::class, 'index'])->name('home');
@@ -34,15 +19,17 @@ Route::get('category/{slug}', [controller1::class, 'category']);
 Route::get('cart', [controller1::class, 'cart']);
 Route::get('checkout', [controller1::class, 'checkout']);
 
-
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'verified']], function () {
+Route::group(['prefix' => 'dashboard'], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    // Route untuk kategori
+
     Route::resource('categories', ProductCategoryController::class);
-    Route::get('products', [DashboardController::class, 'products'])->name('products');
-    // Route resource untuk produk
     Route::resource('products', ProductController::class);
-});
+
+    // Route::get('products',[DashboardController::class,'products'])->name('products');
+
+
+})->middleware(['auth', 'verified']);
+
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -52,7 +39,26 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+Route::group(['prefix' => 'customer'], function () {
+    Route::controller(CustomerAuthController::class)->group(function () {
+        Route::group(['middleware' => 'check_customer_login'], function () {
+            //tampilkan halaman login 
+            Route::get('login', 'login')->name('customer.login');
+
+            //aksi login 
+            Route::post('login', 'store_login')->name('customer.store_login');
+
+            //tampilkan halaman register 
+            Route::get('register', 'register')->name('customer.register');
+
+            //aksi register 
+            Route::post('register', 'store_register')->name('customer.store_register');
+        });
 
 
+        //aksi logout 
+        Route::post('logout', 'logout')->name('customer.logout');
+    });
+});
 
 require __DIR__ . '/auth.php';
